@@ -12,11 +12,14 @@ const createUser = async (req: Request, res: Response) => {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
   }
 
-  if(!userService.checkDuplicatedUsername) {
+  const { user_name, user_password } = req.body;
+
+  const isDuplicated = await userService.checkDuplicatedUsername(user_name);
+
+  if(isDuplicated) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.DUPLICATED_USERNAME));
   }
 
-  const { user_name, user_password } = req.body;
   const data = await userService.createUser(user_name, user_password);
 
   if (!data) {
@@ -38,7 +41,7 @@ const signInUser = async (req: Request, res: Response) => {
   try {
     const userId = await userService.signIn(user_name, user_password);
 
-    if (!userId) return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
+    if (!userId) return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.SIGNIN_FAIL));
     else if (userId === sc.UNAUTHORIZED)
       return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_PASSWORD));
 
@@ -48,7 +51,7 @@ const signInUser = async (req: Request, res: Response) => {
       accessToken,
     };
 
-    res.status(sc.OK).send(success(sc.OK, rm.SIGNIN_SUCCESS, result));
+    return res.status(sc.OK).send(success(sc.OK, rm.SIGNIN_SUCCESS, result));
   } catch (e) {
     console.log(error);
     //? 서버 내부에서 오류 발생
@@ -56,6 +59,7 @@ const signInUser = async (req: Request, res: Response) => {
   }
 };
 
+//* 아이디 중복
 const checkDuplicatedUsername =  async (req: Request, res: Response) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -64,10 +68,10 @@ const checkDuplicatedUsername =  async (req: Request, res: Response) => {
 
   const { user_name } = req.body;
 
-  const data = userService.checkDuplicatedUsername(user_name);
+  const isDuplicated = await userService.checkDuplicatedUsername(user_name);
 
   const result = {
-    isDuplicated: data
+    isDuplicated: isDuplicated
   }
 
   return res.status(sc.OK).send(success(sc.OK, rm.CHECK_DUPLICATED, result));
