@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model diary {
+  diary_id      Int          @id @unique @default(autoincrement())
+  user_id       Int
+  diary_img     String?      @db.VarChar(200)
+  diary_content String?      @db.VarChar(200)
+  created_at    DateTime?    @db.Timestamp(6)
+  modified_at   DateTime?    @db.Timestamp(6)
+  user_account  user_account @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model user_account {
+  user_id       Int       @id @unique @default(autoincrement())
+  user_name     String    @unique @db.VarChar(20)
+  user_password String    @db.VarChar(200)
+  created_at    DateTime? @db.Timestamp(6)
+  modified_at   DateTime? @db.Timestamp(6)
+  diary         diary[]
+}
