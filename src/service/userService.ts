@@ -49,8 +49,8 @@ const checkDuplicatedUsername = async (user_name: string) => {
     }
   })
 
-  if(!data) return false;
-  return true;
+  if(data) return true;
+  return false;
 } 
 
 const userService = {
