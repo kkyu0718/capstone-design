@@ -4,6 +4,7 @@ import { rm, sc } from "../constants";
 import { fail, success } from "../constants/response";
 import jwtHandler from "../modules/jwtHandler";
 import { userService } from "../service";
+import { user_account } from "@prisma/client";
 
 //* 회원 가입
 const createUser = async (req: Request, res: Response) => {
@@ -39,7 +40,10 @@ const signInUser = async (req: Request, res: Response) => {
   const { user_name, user_password } = req.body;
 
   try {
-    const userId = await userService.signIn(user_name, user_password);
+    const user = await userService.signIn(user_name, user_password) as user_account;
+
+    const userId = user.user_id;
+    const userName = user.user_name;
 
     if (!userId) return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.SIGNIN_FAIL));
     else if (userId === sc.UNAUTHORIZED)
@@ -48,7 +52,8 @@ const signInUser = async (req: Request, res: Response) => {
     const accessToken = jwtHandler.sign(userId);
 
     const result = {
-      accessToken,
+      accessToken : accessToken,
+      userName : userName
     };
 
     return res.status(sc.OK).send(success(sc.OK, rm.SIGNIN_SUCCESS, result));
@@ -77,11 +82,28 @@ const checkDuplicatedUsername =  async (req: Request, res: Response) => {
   return res.status(sc.OK).send(success(sc.OK, rm.CHECK_DUPLICATED, result));
 }
 
+const getDiary = async (req: Request, res: Response) => {
+  const error = validationResult(req);
+  if(!error.isEmpty()) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
+
+  const { userId } = req.body;
+  const month = req.query?.month;
+  const year = req.query?.year;
+
+  // month, year 모두 안들어오면 조건 없이 검색
+  // 그렇지 않다면 date로 검색
+  const diary = (month == undefined) && (year == undefined) ? await userService.getDiary(+userId) : await userService.getDiaryByDate(+userId, +year!, +month!);
+
+  return res.status(sc.OK).send(success(sc.OK, rm.DIARY_FOUND, diary));
+}
 
 const userController = {
   createUser,
   signInUser,
   checkDuplicatedUsername,
+  getDiary,
 };
 
 export default userController;

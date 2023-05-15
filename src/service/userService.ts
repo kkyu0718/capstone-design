@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, user_account } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { sc } from "../constants";
 
@@ -34,7 +34,7 @@ const signIn = async (user_name: string, user_password: string) => {
     const isMatch = await bcrypt.compare(user_password, user.user_password);
     if (!isMatch) return sc.UNAUTHORIZED;
 
-    return user.user_id;
+    return user;
   } catch (error) {
     console.log(error);
     throw error;
@@ -53,10 +53,39 @@ const checkDuplicatedUsername = async (user_name: string) => {
   return false;
 } 
 
+const getDiary = async (userId: number) => {
+  const data = await prisma.diary.findMany({
+    where: {
+      user_id: userId
+    }
+  })
+
+  return data;
+}
+
+const getDiaryByDate =async (userId: number, year: number, month: number) => {
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month, 31);
+
+  const data = await prisma.diary.findMany({
+    where: {
+      user_id: userId,
+      created_at: {
+        gte: start,
+        lte: end,
+      }
+    }
+  })
+
+  return data;
+}
+
 const userService = {
   createUser,
   signIn,
   checkDuplicatedUsername,
+  getDiary,
+  getDiaryByDate,
 };
 
 export default userService;

@@ -29,6 +29,12 @@ export default {
   VALID_TOKEN: "유효한 토큰입니다.",
   EMPTY_TOKEN: "토큰 값이 없습니다.",
 
+  // 다이어리
+  DIARY_FOUND: "다이어리 조회에 성공하였습니다.",
+  DIARY_CREATE_FAIL: "다이어리 생성에 실패하였습니다.",
+  DIARY_CREATED: "다이어리 생성에 성공하였습니다.",
+  DIARY_NOT_FOUND: "다이어리가 존재하지 않습니다.",
+
   // 서버 내 오류
   INTERNAL_SERVER_ERROR: "서버 내 오류",
 };

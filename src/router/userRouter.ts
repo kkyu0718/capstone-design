@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, header, query } from "express-validator";
 import { userController } from "../controller";
+import { auth } from "../middlewares";
 
 const router: Router = Router();
 
@@ -32,5 +33,12 @@ router.post(
   ],
   userController.checkDuplicatedUsername
 );
+
+//* 유저의 다이어리 조회 - POST api/user/diary?month=&year=
+router.get(
+  "/diary",
+  auth,
+  userController.getDiary
+)
 
 export default router;
