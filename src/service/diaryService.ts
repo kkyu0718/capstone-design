@@ -53,7 +53,7 @@ const uploadImageInRemote = async (local_img_url: string) => {
     console.dir("formdata"+util.inspect(formdata, {depth: null}));
     const data = await axios({
         method: 'post',
-        url: 'http://localhost:3000/api/diary/uploadImage',
+        url: 'http://13.209.7.147:3000/api/diary/uploadImage',
         data: formdata,
     }).then((res) => {
         console.log(res.data);
