@@ -34,6 +34,8 @@ export default {
   DIARY_CREATE_FAIL: "다이어리 생성에 실패하였습니다.",
   DIARY_CREATED: "다이어리 생성에 성공하였습니다.",
   DIARY_NOT_FOUND: "다이어리가 존재하지 않습니다.",
+  DIARY_IMG_NOT_FOUND: "해당 url에 이미지가 존재하지 않습니다.",
+  DIARY_IMG_UPLOAD_FAIL: "다이어리 업로드에 실패하였습니다.",
 
   // 서버 내 오류
   INTERNAL_SERVER_ERROR: "서버 내 오류",

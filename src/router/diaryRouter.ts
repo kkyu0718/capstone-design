@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { body } from "express-validator";
 import { auth } from "../middlewares";
 import diaryController from "../controller/diaryController";
+import upload from "../middlewares/upload";
 
 const router: Router = Router();
 
@@ -17,6 +17,12 @@ router.get(
     "/:diary_id",
     auth,
     diaryController.getDiaryInfo
+)
+
+router.post(
+    "/uploadImage",
+    upload.single("file"),
+    diaryController.uploadImage
 )
 
 export default router;
