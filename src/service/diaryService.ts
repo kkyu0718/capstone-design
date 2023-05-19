@@ -36,7 +36,15 @@ const saveImageInLocal = async (diary_img: string) => {
         url: diary_img,
         responseType: 'stream'
     }).then((res) => {
-        return res.data.pipe(fs.createWriteStream(local_img_uri))
+        const writer = fs.createWriteStream(local_img_uri, {flags: 'w'});
+        res.data.pipe(writer);
+        
+        return new Promise((resolve, reject) => {
+            writer.on('finish', resolve)
+            writer.on('error', reject)
+          })
+      
+        
     }).catch((error) => {
         console.log(error.response)
     })
@@ -45,24 +53,33 @@ const saveImageInLocal = async (diary_img: string) => {
 }
 
 const uploadImageInRemote = async (local_img_url: string) => {
-    const formdata = new FormData();
-    const img = await fs.readFileSync(local_img_url);
+    console.log("uploading...")
+    const formdata = new FormData(); 
+    // const reader = fs.createReadStream(local_img_url, 'utf-8');
+    const img = fs.readFileSync(local_img_url,
+    { encoding: 'base64', flag: 'r' });
+    // console.log(img);
 
-    formdata.append('file', img, "image");
+    formdata.append('file', img, "test.png");
+    // formdata.append("file", "tempory")
 
-    console.dir("formdata"+util.inspect(formdata, {depth: null}));
+    // console.dir("formdata"+util.inspect(formdata, {depth: null}));
     const data = await axios({
         method: 'post',
-        url: 'http://13.209.7.147:3000/api/diary/uploadImage',
+        url: 'http://localhost:3000/api/diary/uploadImage',
         data: formdata,
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
     }).then((res) => {
-        console.log(res.data);
-        return res.data;
+        // console.log("업로드 response")
+        // console.log(res);
+        return res?.data;
     }).catch((error) => {
         console.log(error.response)
     })
-    // console.log("returning data" + data.data)
-    return data.data;
+    // console.log("returning data" + data?.data)
+    return data?.data;
 }
 
 const diaryService = {

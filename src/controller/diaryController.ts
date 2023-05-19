@@ -15,7 +15,6 @@ const createDiary = async (req: Request, res: Response) => {
 
     const local_img_url = await diaryService.saveImageInLocal(diary_img);
     // const local_img_url = "test.png"
-
     if(local_img_url == undefined) {
         return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.DIARY_IMG_NOT_FOUND));
     }
@@ -53,7 +52,8 @@ const getDiaryInfo = async (req: Request, res: Response) => {
 }
 
 const uploadImage =async (req: Request, res: Response, next: NextFunction) => {
-    console.dir("req.file"+util.inspect(req.file, {depth: null}));
+    // console.dir("req"+util.inspect(req, {depth: null}))
+    // console.log(req);
     return res.status(sc.OK).send(success(sc.OK, "test", req.file?.location));
 }
 
