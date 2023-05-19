@@ -52,8 +52,6 @@ const getDiaryInfo = async (req: Request, res: Response) => {
 }
 
 const uploadImage =async (req: Request, res: Response, next: NextFunction) => {
-    // console.dir("req"+util.inspect(req, {depth: null}))
-    // console.log(req);
     return res.status(sc.OK).send(success(sc.OK, "test", req.file?.location));
 }
 

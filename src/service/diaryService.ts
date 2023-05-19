@@ -55,15 +55,10 @@ const saveImageInLocal = async (diary_img: string) => {
 const uploadImageInRemote = async (local_img_url: string) => {
     console.log("uploading...")
     const formdata = new FormData(); 
-    // const reader = fs.createReadStream(local_img_url, 'utf-8');
-    const img = fs.readFileSync(local_img_url,
-    { encoding: 'base64', flag: 'r' });
-    // console.log(img);
+    const img = fs.readFileSync(local_img_url, { encoding: 'base64', flag: 'r' });
 
     formdata.append('file', img, "test.png");
-    // formdata.append("file", "tempory")
 
-    // console.dir("formdata"+util.inspect(formdata, {depth: null}));
     const data = await axios({
         method: 'post',
         url: 'http://localhost:3000/api/diary/uploadImage',
@@ -72,13 +67,10 @@ const uploadImageInRemote = async (local_img_url: string) => {
             "Content-Type": "multipart/form-data",
         },
     }).then((res) => {
-        // console.log("업로드 response")
-        // console.log(res);
         return res?.data;
     }).catch((error) => {
         console.log(error.response)
     })
-    // console.log("returning data" + data?.data)
     return data?.data;
 }
 
