@@ -31,7 +31,7 @@ const getDiaryInfo = async (diary_id: number) => {
 const saveImageInLocal = async (diary_img: string) => {
     const local_img_uri = "test.png";
 
-    await axios({
+    const result = await axios({
         method: 'get',
         url: diary_img,
         responseType: 'stream'
@@ -55,22 +55,28 @@ const saveImageInLocal = async (diary_img: string) => {
 const uploadImageInRemote = async (local_img_url: string) => {
     console.log("uploading...")
     const formdata = new FormData(); 
-    const img = fs.readFileSync(local_img_url, { encoding: 'base64', flag: 'r' });
+    const img = fs.readFileSync(local_img_url);
+
+    axios.interceptors.request.use(function (config) {
+        console.log('Request:', config); // 요청 객체 출력
+        return config;
+      }, function (error) {
+        return Promise.reject(error);
+      });
 
     formdata.append('file', img, "test.png");
-
+    
     const data = await axios({
         method: 'post',
         url: 'http://localhost:3000/api/diary/uploadImage',
         data: formdata,
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
+        headers: formdata.getHeaders(),
     }).then((res) => {
         return res?.data;
     }).catch((error) => {
         console.log(error.response)
     })
+
     return data?.data;
 }
 
