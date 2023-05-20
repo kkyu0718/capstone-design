@@ -77,6 +77,8 @@ const uploadImageInRemote = async (local_img_url: string) => {
         console.log(error.response)
     })
 
+    console.log(data)
+
     return data?.data;
 }
 
